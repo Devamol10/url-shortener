@@ -8,12 +8,12 @@ export default function AuthCallback() {
   useEffect(() => {
     const completeAuth = async () => {
       try {
-        // Cookies are already set by the server OAuth callback.
-        // Verify auth by calling /auth/me (cookies are sent automatically).
+        // Ensure auth token works correctly with cookies
+        await api.post("/api/auth/refresh");
+
         const res = await api.get("/api/auth/me", { skipAuthRefresh: true });
 
         if (res.data?.userId) {
-          // Auth confirmed — store a flag so the app knows we're logged in
           navigate("/", { replace: true });
         } else {
           navigate("/login", { replace: true });

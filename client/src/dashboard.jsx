@@ -52,7 +52,6 @@ function Dashboard() {
   const handleLogout = async () => {
     try {
       await api.post("/api/auth/logout");
-      localStorage.removeItem("token");
       navigate("/login");
     } catch {
       alert("Logout failed");

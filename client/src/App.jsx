@@ -53,12 +53,6 @@ function CreatePassword() {
         password: trimmedPassword,
       });
 
-      // Store access token if returned
-      const tokenFromApi = res.data?.token;
-      if (tokenFromApi) {
-        localStorage.setItem("token", tokenFromApi);
-      }
-
       setMessage("Password set successfully. Redirecting...");
 
       setTimeout(() => {

@@ -46,11 +46,6 @@ function Login() {
         password: trimmedPassword,
       });
 
-      const token = res.data?.token;
-      if (token) {
-        localStorage.setItem("token", token);
-      }
-
       setEmail(normalizedEmail);
       navigate("/");
     } catch (err) {
