@@ -108,7 +108,7 @@ router.get(
 );
 
 // auth status
-router.get("/api/me", protect, async (req, res) => {
+router.get("/me", protect, async (req, res) => {
   const user = await User.findById(req.userId);
 
   if (!user) {

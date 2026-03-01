@@ -12,7 +12,7 @@ import {
 
 const router = express.Router();
 
-router.post("/api/shorten", optionalProtect, createShortUrl);
+router.post("/shorten", optionalProtect, createShortUrl);
 router.get("/my-urls", protect, getMyUrls);
 router.get("/stats/:shortCode", optionalProtect, getUrlStats);
 router.delete("/urls/:id", protect, deleteUrl);
