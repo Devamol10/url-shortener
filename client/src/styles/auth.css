@@ -1,0 +1,173 @@
+/* auth.css */
+
+.login-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: var(--color-bg);
+    padding: var(--space-4);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Optional subtle background pattern for auth pages */
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: radial-gradient(circle at top right, rgba(90, 82, 255, 0.05), transparent 40%),
+        radial-gradient(circle at bottom left, rgba(90, 82, 255, 0.05), transparent 40%);
+    pointer-events: none;
+}
+
+.login-box {
+    background: var(--color-surface);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
+    max-width: 440px;
+    padding: var(--space-8);
+    border: 1px solid var(--color-border);
+    position: relative;
+    z-index: 1;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.login-title {
+    text-align: center;
+    margin-bottom: var(--space-6);
+    font-size: 1.75rem;
+    color: var(--color-text);
+    letter-spacing: -0.01em;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.login-input {
+    /* Inherits global input styles from components.css, but we can add specific tweaks if needed */
+    background-color: var(--color-bg);
+}
+
+.login-button {
+    background-color: var(--color-primary);
+    color: white;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all var(--transition-fast);
+    box-shadow: var(--shadow-sm);
+    margin-top: var(--space-2);
+}
+
+.login-button:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-1px);
+}
+
+.login-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.login-error {
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.register-success,
+.create-password-success {
+    color: var(--color-success);
+    background: var(--color-success-bg);
+    padding: var(--space-3);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.login-divider {
+    text-align: center;
+    margin: var(--space-4) 0;
+    color: var(--color-text-muted);
+    font-size: 0.875rem;
+    position: relative;
+}
+
+.login-divider::before,
+.login-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background-color: var(--color-border);
+}
+
+.login-divider::before {
+    left: 0;
+}
+
+.login-divider::after {
+    right: 0;
+}
+
+.oauth-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.oauth-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    color: var(--color-text);
+    transition: background-color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.oauth-button:hover {
+    background-color: var(--color-surface-hover);
+    border-color: var(--color-text-muted);
+}
+
+/* Optional: Add icons via pseudo-elements or just keep it text for now since JSX doesn't have SVG icons for them */
+
+.login-footer {
+    text-align: center;
+    margin-top: var(--space-6);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+}
+
+.login-footer a {
+    font-weight: 600;
+    margin-left: var(--space-1);
+}
+
+@media (max-width: 480px) {
+    .login-box {
+        padding: var(--space-6);
+    }
+}

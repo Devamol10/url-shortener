@@ -1,0 +1,123 @@
+/* layout.css */
+/* main container */
+.shell {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 var(--space-5);
+    width: 100%;
+}
+
+/* navigation */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-6);
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(229, 231, 235, 0.5);
+}
+
+.logo {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-text);
+    letter-spacing: -0.02em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.nav-actions {
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+}
+
+.link-reset {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* base sections */
+.section {
+    padding: var(--space-12) 0;
+}
+
+.section-head {
+    text-align: center;
+    margin-bottom: var(--space-10);
+    max-width: 600px;
+    margin-inline: auto;
+}
+
+.eyebrow {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.875rem;
+    letter-spacing: 0.05em;
+    margin-bottom: var(--space-2);
+}
+
+/* footer */
+.footer {
+    padding: var(--space-8) var(--space-5);
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+    margin-top: var(--space-12);
+    color: var(--color-text-muted);
+}
+
+.footer-brand {
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: var(--space-2);
+    font-size: 1.125rem;
+}
+
+/* utility layouts */
+.flex-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flex-between {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.grid-cols-2 {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+}
+
+.grid-cols-3 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .navbar {
+        padding: var(--space-4) var(--space-4);
+    }
+
+    .section {
+        padding: var(--space-8) 0;
+    }
+
+    .grid-cols-2,
+    .grid-cols-3 {
+        grid-template-columns: 1fr;
+    }
+}
