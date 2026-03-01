@@ -15,6 +15,7 @@ function Home() {
   const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showDashboardMsg, setShowDashboardMsg] = useState(false);
 
 
 
@@ -160,6 +161,15 @@ function Home() {
     }
   };
 
+  const handleDashboardClick = () => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    } else {
+      setShowDashboardMsg(true);
+      setTimeout(() => setShowDashboardMsg(false), 3000);
+    }
+  };
+
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -190,24 +200,42 @@ function Home() {
       <header className="navbar">
         <div className="logo">LinkMint</div>
         <div className="nav-actions">
+          <div style={{ position: "relative", display: "inline-block" }}>
+            <button className="btn ghost" onClick={handleDashboardClick}>
+              Dashboard
+            </button>
+            {showDashboardMsg && !isAuthenticated && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "120%",
+                  right: "50%",
+                  transform: "translateX(50%)",
+                  backgroundColor: "#ffffff",
+                  color: "#333",
+                  padding: "8px 12px",
+                  borderRadius: "8px",
+                  fontSize: "14px",
+                  fontWeight: "500",
+                  whiteSpace: "nowrap",
+                  zIndex: 50,
+                  boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+                  border: "1px solid #eee",
+                  animation: "fadeIn 0.2s ease-in-out"
+                }}
+              >
+                Please login first to access your dashboard.
+              </div>
+            )}
+          </div>
           {isAuthenticated ? (
-            <>
-              <button className="btn ghost" onClick={() => navigate("/dashboard")}>
-                Dashboard
-              </button>
-              <button className="btn ghost" onClick={handleLogout}>
-                Logout
-              </button>
-            </>
+            <button className="btn solid" onClick={handleLogout}>
+              Logout
+            </button>
           ) : (
-            <>
-              <Link className="link-reset" to="/login">
-                <button className="btn ghost">Log in</button>
-              </Link>
-              <Link className="link-reset" to="/register">
-                <button className="btn solid">Get started</button>
-              </Link>
-            </>
+            <Link className="link-reset" to="/login">
+              <button className="btn solid">Login</button>
+            </Link>
           )}
         </div>
       </header>
