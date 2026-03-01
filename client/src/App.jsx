@@ -48,7 +48,7 @@ function CreatePassword() {
       setError("");
       setMessage("");
 
-      const res = await api.post("/auth/set-password", {
+      const res = await api.post("/api/auth/set-password", {
         token,
         password: trimmedPassword,
       });
@@ -116,7 +116,7 @@ function ProtectedRoute({ children }) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await api.get("/auth/me", { skipAuthRefresh: true });
+        await api.get("/api/auth/me", { skipAuthRefresh: true });
         setAuthenticated(true);
       } catch {
         setAuthenticated(false);

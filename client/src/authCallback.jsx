@@ -10,7 +10,7 @@ export default function AuthCallback() {
       try {
         // Cookies are already set by the server OAuth callback.
         // Verify auth by calling /auth/me (cookies are sent automatically).
-        const res = await api.get("/auth/me", { skipAuthRefresh: true });
+        const res = await api.get("/api/auth/me", { skipAuthRefresh: true });
 
         if (res.data?.userId) {
           // Auth confirmed — store a flag so the app knows we're logged in

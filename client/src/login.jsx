@@ -16,11 +16,11 @@ function Login() {
   const normalizeEmail = (value) => value.trim().toLowerCase();
 
   const openGoogleLogin = () => {
-    window.location.href = `${oauthBase}/auth/google`;
+    window.location.href = `${oauthBase}/api/auth/google`;
   };
 
   const openGithubLogin = () => {
-    window.location.href = `${oauthBase}/auth/github`;
+    window.location.href = `${oauthBase}/api/auth/github`;
   };
 
   const handleLogin = async () => {
@@ -41,7 +41,7 @@ function Login() {
       setLoading(true);
       setError("");
 
-      const res = await api.post("/auth/login", {
+      const res = await api.post("/api/auth/login", {
         email: normalizedEmail,
         password: trimmedPassword,
       });

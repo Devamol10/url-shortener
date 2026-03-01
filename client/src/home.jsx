@@ -118,7 +118,7 @@ function Home() {
       setResult(null);
       setCopied(false);
 
-      const res = await api.post("/shorten", { originalUrl: trimmed });
+      const res = await api.post("/api/shorten", { originalUrl: trimmed });
       setResult(res.data);
       setUrl("");
 
@@ -150,7 +150,7 @@ function Home() {
 
   const handleLogout = async () => {
     try {
-      await api.post("/auth/logout");
+      await api.post("/api/auth/logout");
     } catch {
       // ignore logout errors to keep UX smooth
     } finally {
@@ -163,7 +163,7 @@ function Home() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        await api.get("/auth/me", { skipAuthRefresh: true });
+        await api.get("/api/auth/me", { skipAuthRefresh: true });
         setIsAuthenticated(true);
       } catch {
         setIsAuthenticated(false);

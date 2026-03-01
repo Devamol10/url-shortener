@@ -15,7 +15,7 @@ function Dashboard() {
   useEffect(() => {
     const fetchUrls = async () => {
       try {
-        const res = await api.get("/my-urls");
+        const res = await api.get("/api/my-urls");
         setUrls(res.data);
       } catch {
         setError("Failed to load URLs. Please login again.");
@@ -41,7 +41,7 @@ function Dashboard() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this URL?")) return;
     try {
-      await api.delete(`/urls/${id}`);
+      await api.delete(`/api/urls/${id}`);
       setUrls((prev) => prev.filter((url) => url._id !== id));
     } catch {
       alert("Failed to delete URL");
@@ -51,7 +51,7 @@ function Dashboard() {
   // Logout
   const handleLogout = async () => {
     try {
-      await api.post("/auth/logout");
+      await api.post("/api/auth/logout");
       localStorage.removeItem("token");
       navigate("/login");
     } catch {
@@ -155,7 +155,7 @@ function Dashboard() {
         ) : (
           <div className="dash-url-list">
             {urls.map((url, i) => {
-              const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
+              const baseUrl = import.meta.env.VITE_API_URL;
               const fullShortUrl = `${baseUrl}/${url.shortCode}`;
               return (
                 <div

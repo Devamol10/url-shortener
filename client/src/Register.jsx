@@ -14,11 +14,11 @@ function Register() {
   const normalizeEmail = (value) => value.trim().toLowerCase();
 
   const openGoogleLogin = () => {
-    window.location.href = `${oauthBase}/auth/google/register`;
+    window.location.href = `${oauthBase}/api/auth/google/register`;
   };
 
   const openGithubLogin = () => {
-    window.location.href = `${oauthBase}/auth/github/register`;
+    window.location.href = `${oauthBase}/api/auth/github/register`;
   };
 
   const handleRegister = async () => {
@@ -39,7 +39,7 @@ function Register() {
       setError("");
       setMessage("");
 
-      await api.post("/auth/request-verification", { email: normalizedEmail });
+      await api.post("/api/auth/request-verification", { email: normalizedEmail });
 
       setMessage(
         "Verification email sent. Please check your inbox."

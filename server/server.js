@@ -130,6 +130,7 @@ const authLimiter = rateLimit({
 // routes
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api", urlRoutes);
+app.get("/api/health", (req, res) => res.status(200).json({ status: "ok" }));
 app.get("/:shortCode", redirectUrl);
 
 // error handler
