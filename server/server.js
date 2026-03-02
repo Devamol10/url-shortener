@@ -114,6 +114,7 @@ app.use(
     name: "sid",
   })
 );
+console.log("NODE_ENV is:", process.env.NODE_ENV);
 
 app.use(passport.initialize());
 app.use(morgan(isProd ? "combined" : "dev"));
