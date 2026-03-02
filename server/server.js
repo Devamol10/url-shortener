@@ -86,11 +86,13 @@ const allowedOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 
 app.use(
   cors({
-    origin: allowedOrigin,
+    origin: [
+      "http://localhost:5173",
+      "https://linkmint-short-url.netlify.app"
+    ],
     credentials: true,
   })
 );
-
 app.use(express.json());
 app.use(cookieParser());
 
