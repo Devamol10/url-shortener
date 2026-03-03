@@ -1,30 +1,45 @@
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import axios from "axios";
 
 export const sendEmail = async ({ to, subject, html }) => {
   try {
-    const { data, error } = await resend.emails.send({
-from: process.env.EMAIL_FROM || "LinkMint <onboarding@resend.dev>",      to,
-      subject,
-      html,
-    });
+    const response = await axios.post(
+      "https://api.brevo.com/v3/smtp/email",
+      {
+        sender: {
+          name: "LinkMint",
+          email: process.env.EMAIL_FROM,
+        },
+        to: [{ email: to }],
+        subject,
+        htmlContent: html,
+      },
+      {
+        headers: {
+          "api-key": process.env.BrevoApiKey,
+          "Content-Type": "application/json",
+        },
+      }
+    );
 
-    if (error) {
-  console.error("Resend FULL error:", JSON.stringify(error, null, 2));
-  throw error;  
-}
+    console.log("Email sent:", response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error("Brevo error:", error.response?.data || error.message);
+    throw error;
+  }
+};
     // if (error) {
     //   console.error("Resend error:", error);
     //   throw new Error("Email could not be sent");
     // }
 
-    console.log("Email sent successfully:", data?.id);
-  } catch (error) {
-    console.error("Email sending failed:", error);
-    throw new Error("Email could not be sent");
-  }
-};
+//     console.log("Email sent successfully:", data?.id);
+//   } catch (error) {
+//     console.error("Email sending failed:", error);
+//     throw new Error("Email could not be sent");
+//   }
+// };
 // import nodemailer from "nodemailer";
 
 // let transporterPromise;
