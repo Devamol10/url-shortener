@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios from "axios"; //axios used 
 
 export const sendEmail = async ({ to, subject, html }) => {
   try {
@@ -23,6 +23,7 @@ export const sendEmail = async ({ to, subject, html }) => {
 
     console.log("Email sent:", response.data);
     return response.data;
+
 
   } catch (error) {
     console.error("Brevo error:", error.response?.data || error.message);
