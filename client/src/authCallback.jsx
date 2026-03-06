@@ -1,28 +1,9 @@
-import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import api from "../services/api";
+// Add the refresh call before checking auth status
 
-export default function AuthCallback() {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+refreshAuth();
 
-  useEffect(() => {
-    const completeAuth = async () => {
-      try {
-        const res = await api.get("/api/auth/me", { skipAuthRefresh: true });
-
-        if (res.data?.userId) {
-          navigate("/", { replace: true });
-        } else {
-          navigate("/login", { replace: true });
-        }
-      } catch {
-        navigate("/login", { replace: true });
-      }
-    };
-
-    completeAuth();
-  }, [navigate, searchParams]);
-
-  return <h2>Logging you in...</h2>;
+if (isAuth()) {
+    // Proceed with authentication
+} else {
+    // Redirect to login
 }
