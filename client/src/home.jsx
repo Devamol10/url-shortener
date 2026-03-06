@@ -156,9 +156,10 @@ function Home() {
 
   const handleLogout = async () => {
     try {
-      await api.post("/api/auth/logout");
+      await api.post("/api/auth/logout"); 
     } catch {
     } finally {
+      sessionStorage.removeItem("token");
       setIsAuthenticated(false);
       navigate("/");
     }

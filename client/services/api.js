@@ -7,6 +7,16 @@ const api = axios.create({
   withCredentials: true,
 });
 
+// Attach token from sessionStorage (set during OAuth callback for cross-domain browsers)
+api.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem("token");
+  if (token) {
+    config.headers = config.headers || {};
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -28,9 +38,18 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        await api.post("/api/auth/refresh", {}, { skipAuthRefresh: true });
+        const refreshRes = await api.post("/api/auth/refresh", {}, { skipAuthRefresh: true });
+
+        const newToken = refreshRes.data?.token;
+        if (newToken) {
+          sessionStorage.setItem("token", newToken);
+          originalRequest.headers = originalRequest.headers || {};
+          originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        }
+
         return api(originalRequest);
       } catch (refreshError) {
+        sessionStorage.removeItem("token");
         window.location.href = "/login";
         return Promise.reject(refreshError);
       }

@@ -9,6 +9,11 @@ export default function AuthCallback() {
   useEffect(() => {
     const completeAuth = async () => {
       try {
+        const token = searchParams.get("token");
+        if (token) {
+          sessionStorage.setItem("token", token);
+        }
+
         const res = await api.get("/api/auth/me", { skipAuthRefresh: true });
 
         if (res.data?.userId) {
