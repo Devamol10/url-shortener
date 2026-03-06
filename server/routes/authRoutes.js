@@ -20,23 +20,6 @@ import User from "../models/user.js";
 
 const router = express.Router();
 
-// TEMPORARY DEBUG ENDPOINT
-router.get("/debug/cookies", (req, res) => {
-  console.log("\n---- DEBUG: [GET /api/auth/debug/cookies] HIT ----");
-  console.log("DEBUG req.cookies object:", req.cookies);
-
-  const hasRefreshToken = !!req.cookies?.refreshToken;
-  const hasAccessToken = !!req.cookies?.accessToken;
-
-  res.status(200).json({
-    message: "Debug cookie info",
-    cookiesReceived: Object.keys(req.cookies || {}),
-    hasRefreshToken,
-    hasAccessToken,
-    refreshTokenPrefix: hasRefreshToken ? req.cookies.refreshToken.substring(0, 5) : null
-  });
-});
-
 // rate limiters
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

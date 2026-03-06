@@ -34,7 +34,7 @@ export const requestVerification = asyncHandler(async (req, res) => {
     return res.status(400).json({ message: "Invalid email format" });
   }
 
-  const existingUser = await User.findOne({ email: normalizedEmail });
+  const existingUser = await User.findOne({ email:normalizedEmail });
 
   if (existingUser && existingUser.isVerified) {
     return res.status(409).json({
@@ -50,18 +50,18 @@ export const requestVerification = asyncHandler(async (req, res) => {
 
   let user = existingUser;
 
-  if (!existingUser) {
-    user = await User.create({
-      email: normalizedEmail,
-      verificationToken: hashedToken,
-      verificationTokenExpires: tokenExpiry,
-    });
-  } else {
-    user = existingUser;
-    user.verificationToken = hashedToken;
-    user.verificationTokenExpires = tokenExpiry;
-    await user.save();
-  }
+if (!existingUser) {
+  user = await User.create({
+    email: normalizedEmail,
+    verificationToken: hashedToken,
+    verificationTokenExpires: tokenExpiry,
+  });
+} else {
+  user = existingUser;
+  user.verificationToken = hashedToken;
+  user.verificationTokenExpires = tokenExpiry;
+  await user.save();
+}
 
   const baseUrl = process.env.BASE_URL || "http://localhost:5000";
   const verificationUrl = `${baseUrl}/api/auth/verify/${rawToken}`;
@@ -225,9 +225,6 @@ export const login = asyncHandler(async (req, res) => {
     });
   }
 
-  console.log(`\n---- DEBUG: LOGIN SUCCESS for ${normalizedEmail} ----`);
-  console.log("DEBUG: Generating tokens (15m access, 7d refresh)...");
-
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken();
   const hashedRefreshToken = hashRefreshToken(refreshToken);
@@ -235,11 +232,8 @@ export const login = asyncHandler(async (req, res) => {
   user.refreshToken = hashedRefreshToken;
   user.refreshTokenExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   await user.save();
-  console.log("DEBUG: Refresh token saved to DB.");
 
-  console.log("DEBUG: Setting authentication cookies...");
   setAuthCookies(res, accessToken, refreshToken);
-  console.log("---- DEBUG: LOGIN COMPLETE ----\n");
 
   res.status(200).json({
     message: "Login successful",
@@ -249,36 +243,22 @@ export const login = asyncHandler(async (req, res) => {
 
 // refresh token (rotation)
 export const refreshToken = asyncHandler(async (req, res) => {
-  console.log("\n---- DEBUG: [POST /api/auth/refresh] HIT ----");
   const token = req.cookies?.refreshToken;
 
-  console.log("DEBUG: All Cookies Received:", Object.keys(req.cookies || {}));
-  console.log("DEBUG: Refresh token present in cookies?", !!token);
-
   if (!token) {
-    console.log("DEBUG: Refresh token missing from req.cookies! Blocking request (401).");
-    return res.status(401).json({ message: "Refresh token missing" });
+    return res.status(401).json({
+      message: "Refresh token missing",
+    });
   }
-
-  console.log(`DEBUG: Refresh Token Value (masked): ${token.substring(0, 5)}...${token.substring(token.length - 5)}`);
 
   const hashedToken = hashRefreshToken(token);
 
   const isBlacklisted = await BlacklistedToken.findOne({ token: hashedToken });
   if (isBlacklisted) {
-    console.log("DEBUG: Token found in Blacklist (Already used/revoked)! Clearing cookies -> 401.");
     clearAuthCookies(res);
-    return res.status(401).json({ message: "Session expired or revoked. Please login again." });
-  }
-
-  console.log("DEBUG: Token not blacklisted. Querying DB for user...");
-
-  // Explicitly check if token exists at all vs if it's expired
-  const userExists = await User.findOne({ refreshToken: hashedToken });
-  if (!userExists) {
-    console.log("DEBUG: Token NOT FOUND in User DB! Database mismatch.");
-  } else if (new Date(userExists.refreshTokenExpires) <= new Date()) {
-    console.log(`DEBUG: Token FOUND, but EXPIRED. Expiry time was: ${userExists.refreshTokenExpires}`);
+    return res.status(401).json({
+      message: "Session expired or revoked. Please login again.",
+    });
   }
 
   const user = await User.findOne({
@@ -287,25 +267,22 @@ export const refreshToken = asyncHandler(async (req, res) => {
   });
 
   if (!user) {
-    console.log("DEBUG: Invalid or expired refresh token. Clearing cookies -> 403.");
     clearAuthCookies(res);
-    return res.status(403).json({ message: "Invalid or expired refresh token. Please login again." });
+    return res.status(403).json({
+      message: "Invalid or expired refresh token. Please login again.",
+    });
   }
-
-  console.log(`DEBUG: DB token found and valid for user: ${user.email}. Generating new tokens...`);
 
   const newAccessToken = generateAccessToken(user._id);
   const newRefreshToken = generateRefreshToken();
   const newHashedRefreshToken = hashRefreshToken(newRefreshToken);
 
   user.refreshToken = newHashedRefreshToken;
-  user.refreshTokenExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+  user.refreshTokenExpires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
   await user.save();
 
-  console.log("DEBUG: Setting new auth cookies in response...");
   setAuthCookies(res, newAccessToken, newRefreshToken);
 
-  console.log("---- DEBUG: REFRESH SUCCESSFUL ----\n");
   res.status(200).json({
     message: "Access token refreshed",
     token: newAccessToken,
