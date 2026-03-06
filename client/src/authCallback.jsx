@@ -1,4 +1,4 @@
-﻿import { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../services/api";
 
@@ -9,11 +9,8 @@ export default function AuthCallback() {
   useEffect(() => {
     const completeAuth = async () => {
       try {
-        const token = searchParams.get("token");
-        if (token) {
-          sessionStorage.setItem("token", token);
-        }
-
+        await api.post("/api/auth/refresh", {}, { skipAuthRefresh: true });
+        
         const res = await api.get("/api/auth/me", { skipAuthRefresh: true });
 
         if (res.data?.userId) {
@@ -21,7 +18,8 @@ export default function AuthCallback() {
         } else {
           navigate("/login", { replace: true });
         }
-      } catch {
+      } catch (err) {
+        console.error("Auth callback error:", err);
         navigate("/login", { replace: true });
       }
     };
