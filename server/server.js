@@ -93,17 +93,17 @@ app.use(limiter);
 
 const allowedOrigin = process.env.CLIENT_URL || "http://localhost:5173";
 
-app.use(
-  cors({
-    origin: [
-      "http://localhost:5173",
-      "https://url-shortener-lovat-gamma.vercel.app"
-    ],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: [
+    "http://localhost:5173",
+    "https://url-shortener-lovat-gamma.vercel.app"
+  ],
+  credentials: true,
+};
 
-app.options("*", cors());
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
 app.use(express.json());
 app.use(cookieParser());
 
