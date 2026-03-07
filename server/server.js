@@ -97,7 +97,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://linkmint-short-url.netlify.app"
+      "https://url-shortener-lovat-gamma.vercel.app"
     ],
     credentials: true,
   })
