@@ -49,7 +49,9 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        if (window.location.pathname === '/dashboard') {
+          window.location.href = "/login";
+        }
         return Promise.reject(refreshError);
       }
     }

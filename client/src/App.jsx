@@ -101,6 +101,32 @@ function CreatePassword() {
   );
 }
 
+// Prevents already-authenticated users from seeing login/register pages
+function GuestRoute({ children }) {
+  const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        await api.get("/api/auth/me");
+        setAuthenticated(true);
+      } catch {
+        setAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (loading) return null;
+
+  if (authenticated) return <Navigate to="/" replace />;
+
+  return children;
+}
+
 // Prevents access to dashboard if user is not authenticated
 
 function ProtectedRoute({ children }) {
@@ -159,8 +185,8 @@ function App() {
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/auth/callback" element={<AuthCallback />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<GuestRoute><Login /></GuestRoute>} />
+      <Route path="/register" element={<GuestRoute><Register /></GuestRoute>} />
       <Route path="/create-password" element={<CreatePassword />} />
 
       <Route
