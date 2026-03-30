@@ -18,34 +18,37 @@ import { ChatProvider } from "./context/ChatContext";
 import { AuthProvider } from "./context/AuthContext";
 import Toast from "./components/Toast";
 import AISearchAssistant from "./components/AISearchAssistant";
+import ErrorBoundary from "./components/ErrorBoundary";
 
 function App() {
   return (
-    <AuthProvider>
-      <ChatProvider>
-        <Routes>
-          {/* Public Routes */}
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/set-password" element={<SetPassword />} />
-          <Route path="/create-password" element={<CreatePassword />} />
-          <Route path="/auth/callback" element={<AuthCallback />} />
+    <ErrorBoundary>
+      <AuthProvider>
+        <ChatProvider>
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/set-password" element={<SetPassword />} />
+            <Route path="/create-password" element={<CreatePassword />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
 
-          {/* Protected Marketplace Routes */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Home />} />
-            <Route path="/category/:categoryName" element={<Home />} />
-            <Route path="/add-item" element={<AddItem />} />
-            <Route path="/listings/:id" element={<ItemDetails />} />
-            <Route path="/chat" element={<Chat />} />
-            <Route path="/my-listings" element={<MyListings />} />
-            <Route path="/my-offers" element={<MyOffers />} />
-          </Route>
-        </Routes>
-        <Toast />
-        <AISearchAssistant />
-      </ChatProvider>
-    </AuthProvider>
+            {/* Protected Marketplace Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/" element={<Home />} />
+              <Route path="/category/:categoryName" element={<Home />} />
+              <Route path="/add-item" element={<AddItem />} />
+              <Route path="/listings/:id" element={<ItemDetails />} />
+              <Route path="/chat" element={<Chat />} />
+              <Route path="/my-listings" element={<MyListings />} />
+              <Route path="/my-offers" element={<MyOffers />} />
+            </Route>
+          </Routes>
+          <Toast />
+          <AISearchAssistant />
+        </ChatProvider>
+      </AuthProvider>
+    </ErrorBoundary>
   );
 }
 

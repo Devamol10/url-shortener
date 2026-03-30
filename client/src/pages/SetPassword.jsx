@@ -81,7 +81,7 @@ const SetPassword = () => {
           localStorage.setItem("token", res.data.token);
         }
         await fetchUser();
-        navigate("/", { replace: true });
+        window.location.href = "/";
       } else {
         setFormError(res.data?.message || "Failed to set password.");
         setSubmitting(false);

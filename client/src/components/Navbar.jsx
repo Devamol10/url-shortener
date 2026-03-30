@@ -31,8 +31,9 @@ const Navbar = ({ onSearch }) => {
   const isActive = (path) => location.pathname === path;
 
   const handleLogout = async () => {
+    // The redirect to /login is now handled globally in AuthContext.logout()
+    // via window.location.href to ensure a clean state flush.
     await logout();
-    navigate('/login');
   };
 
   const navItems = [

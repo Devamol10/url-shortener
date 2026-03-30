@@ -34,13 +34,13 @@ export default function AuthCallback() {
         const user = await fetchUser();
 
         if (user) {
-          navigate("/", { replace: true });
+          window.location.href = "/";
         } else {
-          navigate("/login", { replace: true });
+          window.location.href = "/login";
         }
       } catch (err) {
         console.error("Auth callback error:", err);
-        navigate("/login", { replace: true });
+        window.location.href = "/login";
       }
     };
 

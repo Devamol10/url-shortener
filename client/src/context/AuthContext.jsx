@@ -7,6 +7,7 @@ const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isInitialized, setIsInitialized] = useState(false);
 
   const hasFetched = React.useRef(false);
 
@@ -37,6 +38,7 @@ export const AuthProvider = ({ children }) => {
       return null;
     } finally {
       setLoading(false);
+      setIsInitialized(true);
     }
   }, []);
 
@@ -65,16 +67,17 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Logout API failed (silently continuing cleanup):", error.message);
     } finally {
-      // ALWAYS cleanup even if server call fails
       localStorage.removeItem("token");
       disconnectSocket();
       setUser(null);
       setLoading(false);
+      // Hard redirect to clear all React state and memory
+      window.location.href = "/login";
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, fetchUser, login, logout }}>
+    <AuthContext.Provider value={{ user, loading, isInitialized, fetchUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

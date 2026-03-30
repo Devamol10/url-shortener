@@ -82,7 +82,7 @@ const CreatePassword = () => {
         if (userData) {
           // Allow React state to fully flush before navigating
           await new Promise(resolve => setTimeout(resolve, 100));
-          navigate('/', { replace: true });
+          window.location.href = "/";
         } else {
           // fetchUser didn't return user data — fallback: redirect via window
           window.location.href = '/';
