@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import api from "../services/api.js";
+import { useAuth } from "./App.jsx";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -9,6 +9,7 @@ function Login() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const oauthBase = import.meta.env.VITE_API_URL;
 
@@ -41,17 +42,10 @@ function Login() {
       setLoading(true);
       setError("");
 
-      const res = await api.post("/api/auth/login", {
-        email: normalizedEmail,
-        password: trimmedPassword,
-      });
-
-      if (res.data?.token) {
-        localStorage.setItem("token", res.data.token);
-      }
-
-      setEmail(normalizedEmail);
-      navigate("/");
+      await login(normalizedEmail, trimmedPassword);
+      // Auth context now has user set — GuestRoute will redirect away,
+      // but we also navigate explicitly for immediate feedback
+      navigate("/", { replace: true });
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
     } finally {
@@ -116,7 +110,7 @@ function Login() {
           </div>
 
           <div className="login-footer">
-            Don’t have an account? <Link to="/register">Register</Link>
+            Don't have an account? <Link to="/register">Register</Link>
           </div>
         </div>
       </div>

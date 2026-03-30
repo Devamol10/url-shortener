@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../services/api";
 import LinkPerformanceModal from "./LinkPerformanceModal";
+import { useAuth } from "./App.jsx";
 
 function Dashboard() {
   const [urls, setUrls] = useState([]);
@@ -10,6 +11,7 @@ function Dashboard() {
   const [showStats, setShowStats] = useState(false);
   const [copiedId, setCopiedId] = useState(null);
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   // Fetch user URLs
   useEffect(() => {
@@ -50,14 +52,10 @@ function Dashboard() {
 
   // Logout
   const handleLogout = async () => {
-    try {
-      await api.post("/api/auth/logout");
-      sessionStorage.removeItem("token");
-      navigate("/login");
-    } catch {
-      alert("Logout failed");
-    }
+    await logout();
+    navigate("/login", { replace: true });
   };
+
 
   // Loading state
   if (loading) {

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useCallback } from "react";
 import {
   Routes,
   Route,
@@ -14,18 +14,97 @@ import Register from "./Register";
 import Home from "./home.jsx";
 import AuthCallback from "./authCallback.jsx";
 
-// create password page
+// ── Auth Context ───────────────────────────────────────────
+const AuthContext = createContext(null);
 
+export function useAuth() {
+  return useContext(AuthContext);
+}
+
+function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const fetchUser = useCallback(async () => {
+    try {
+      const res = await api.get("/api/auth/me");
+      if (res.data?.userId || res.data?.email) {
+        setUser(res.data);
+        return res.data;
+      } else {
+        setUser(null);
+        return null;
+      }
+    } catch {
+      setUser(null);
+      return null;
+    }
+  }, []);
+
+  const login = useCallback(async (email, password) => {
+    const res = await api.post("/api/auth/login", { email, password });
+    if (res.data?.token) {
+      localStorage.setItem("token", res.data.token);
+    }
+    // Immediately fetch user so state updates
+    await fetchUser();
+    return res.data;
+  }, [fetchUser]);
+
+  const logout = useCallback(async () => {
+    try {
+      await api.post("/api/auth/logout");
+    } catch {
+      // ignore
+    } finally {
+      localStorage.removeItem("token");
+      setUser(null);
+    }
+  }, []);
+
+  // On mount: try to restore session
+  useEffect(() => {
+    const restoreSession = async () => {
+      try {
+        // Attempt cookie-based refresh first
+        const refreshRes = await api.post("/api/auth/refresh", {}, { _skipRefresh: true });
+        const newToken = refreshRes.data?.token;
+        if (newToken) {
+          localStorage.setItem("token", newToken);
+        }
+      } catch {
+        // no valid refresh token — that's okay
+      }
+
+      // Now check if we have a valid session
+      const token = localStorage.getItem("token");
+      if (token) {
+        await fetchUser();
+      }
+      setLoading(false);
+    };
+
+    restoreSession();
+  }, [fetchUser]);
+
+  return (
+    <AuthContext.Provider value={{ user, loading, login, logout, fetchUser }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// ── Create Password Page ───────────────────────────────────
 function CreatePassword() {
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
+  const { fetchUser } = useAuth();
 
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token");
 
-  // Basic password strength validation
   const isStrongPassword = (value = "") =>
     value.length >= 8 && /[A-Za-z]/.test(value) && /\d/.test(value);
 
@@ -53,11 +132,16 @@ function CreatePassword() {
         password: trimmedPassword,
       });
 
+      if (res.data?.token) {
+        localStorage.setItem("token", res.data.token);
+      }
+
       setMessage("Password set successfully. Redirecting...");
+      await fetchUser();
 
       setTimeout(() => {
-        navigate("/");
-      }, 1500);
+        navigate("/", { replace: true });
+      }, 1000);
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
     }
@@ -101,87 +185,29 @@ function CreatePassword() {
   );
 }
 
-// Prevents already-authenticated users from seeing login/register pages
+// ── Route Guards ───────────────────────────────────────────
 function GuestRoute({ children }) {
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await api.get("/api/auth/me");
-        setAuthenticated(true);
-      } catch {
-        setAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-    checkAuth();
-  }, []);
+  const { user, loading } = useAuth();
 
   if (loading) return null;
-
-  if (authenticated) return <Navigate to="/" replace />;
-
+  if (user) return <Navigate to="/" replace />;
   return children;
 }
 
-// Prevents access to dashboard if user is not authenticated
-
 function ProtectedRoute({ children }) {
-  const [loading, setLoading] = useState(true);
-  const [authenticated, setAuthenticated] = useState(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        await api.get("/api/auth/me");
-        setAuthenticated(true);
-      } catch {
-        setAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
+  const { user, loading } = useAuth();
 
   if (loading)
     return <div style={{ padding: "40px" }}>Loading...</div>;
 
-  if (!authenticated)
-    return <Navigate to="/login" />;
+  if (!user)
+    return <Navigate to="/login" replace />;
 
   return children;
 }
 
-// main app routes
-
-function App() {
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    const restoreSession = async () => {
-      try {
-        const res = await api.post("/api/auth/refresh", {}, { _skipRefresh: true });
-        const newToken = res.data?.token;
-        if (newToken) {
-          localStorage.setItem("token", newToken);
-        }
-      } catch (err) {
-        localStorage.removeItem("token");
-      } finally {
-        setReady(true);
-      }
-    };
-
-    restoreSession();
-  }, []);
-
-  if (!ready) return null;
-
+// ── Main App Routes ───────────────────────────────────────
+function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -199,7 +225,6 @@ function App() {
         }
       />
 
-      {/* Protected Dashboard */}
       <Route
         path="/dashboard"
         element={
@@ -209,6 +234,14 @@ function App() {
         }
       />
     </Routes>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <AppRoutes />
+    </AuthProvider>
   );
 }
 

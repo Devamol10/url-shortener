@@ -3,21 +3,23 @@ import { Link, useNavigate } from "react-router-dom";
 const Confetti = React.lazy(() => import("react-confetti"));
 
 import api from "../services/api";
+import { useAuth } from "./App.jsx";
 
 
 function Home() {
+  const { user, logout } = useAuth();
+  const isAuthenticated = !!user;
+  const email = user?.email || "";
+
   const [url, setUrl] = useState("");
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [copied, setCopied] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showDashboardMsg, setShowDashboardMsg] = useState(false);
   const [open, setOpen] = useState(false);
-  const [email, setEmail] = useState("");
 
 
 
@@ -155,14 +157,8 @@ function Home() {
   };
 
   const handleLogout = async () => {
-    try {
-      await api.post("/api/auth/logout");
-    } catch {
-    } finally {
-      localStorage.removeItem("token");
-      setIsAuthenticated(false);
-      navigate("/");
-    }
+    await logout();
+    navigate("/login", { replace: true });
   };
 
   const handleDashboardClick = () => {
@@ -174,22 +170,7 @@ function Home() {
     }
   };
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        // No _skipRefresh here — allow the interceptor to silently refresh
-        // an expired access token using the refresh token cookie before giving up.
-        const res = await api.get("/api/auth/me");
-        setIsAuthenticated(true);
-        setEmail(res.data.email);
-      } catch {
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    checkAuth();
-  }, []);
+  const isLoading = false;
 
   // render
   return (
