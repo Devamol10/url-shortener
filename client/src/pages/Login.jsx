@@ -31,8 +31,8 @@ const Login = () => {
       const res = await login(email, password);
       if (res && res.success) {
         navigate("/", { replace: true });
-      } else if (res && !res.success) {
-        setError(res.message || "Invalid credentials");
+      } else {
+        setError(res?.message || "Invalid credentials");
       }
     } catch (err) {
       const message = err.response?.data?.message || err.message || "Network error occurred";

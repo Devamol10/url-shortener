@@ -3,9 +3,13 @@ import axios from "axios";
 // In development, always use '/api' so Vite proxy handles cross-origin cookies.
 // In production (built), use VITE_API_URL directly.
 const isDev = import.meta.env.MODE === 'development';
+const VITE_API_URL = import.meta.env.VITE_API_URL;
+
+// On Vercel, if VITE_API_URL is not set, we default to the current origin's /api
+// But for robustness in cross-domain scenarios, we prefer absolute if available.
 const BASE_URL = isDev
   ? '/api'
-  : (import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : '/api');
+  : (VITE_API_URL ? `${VITE_API_URL}/api` : `${window.location.origin}/api`);
 
 const api = axios.create({
   baseURL: BASE_URL,

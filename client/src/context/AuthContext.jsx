@@ -14,14 +14,19 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const res = await api.get("/auth/me");
-      if (res.data?.success) {
+      
+      // Safety check for response structure (Vercel might return HTML on 404/Rewrites)
+      if (res.data && typeof res.data === 'object' && res.data.success) {
         setUser(res.data.data);
         return res.data.data;
       } else {
+        console.warn("Auth check failed: Invalid response format", res.data);
         setUser(null);
         return null;
       }
     } catch (error) {
+      const msg = error.response?.data?.message || error.message;
+      console.error("Auth check error:", msg);
       setUser(null);
       return null;
     } finally {
@@ -34,7 +39,7 @@ export const AuthProvider = ({ children }) => {
       hasFetched.current = true;
       fetchUser();
     }
-  }, []);
+  }, [fetchUser]);
 
   const login = async (email, password) => {
     const res = await api.post("/auth/login", { email, password });
@@ -52,8 +57,9 @@ export const AuthProvider = ({ children }) => {
       setLoading(true);
       await api.post("/auth/logout");
     } catch (error) {
-      console.error(error);
+      console.error("Logout API failed (silently continuing cleanup):", error.message);
     } finally {
+      // ALWAYS cleanup even if server call fails
       localStorage.removeItem("token");
       disconnectSocket();
       setUser(null);
