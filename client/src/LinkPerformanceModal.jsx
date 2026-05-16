@@ -30,6 +30,7 @@ function LinkPerformanceModal({ topLinks, maxClicks, onClose }) {
                   10,
                   Math.round(((link.clicks || 0) / maxClicks) * 100)
                 );
+                const hostname = new URL(link.originalUrl).hostname.replace("www.", "");
                 return (
                   <div key={link._id || link.shortCode} className="dash-bar">
                     <div className="dash-bar-value">{link.clicks || 0}</div>
@@ -37,10 +38,10 @@ function LinkPerformanceModal({ topLinks, maxClicks, onClose }) {
                       <div
                         className="dash-bar-fill"
                         style={{ height: `${height}%` }}
-                        title={`${link.shortCode} - ${link.clicks || 0} clicks`}
+                        title={`${hostname} (${link.shortCode}) - ${link.clicks || 0} clicks`}
                       />
                     </div>
-                    <div className="dash-bar-label">{link.shortCode}</div>
+                    <div className="dash-bar-label">{hostname}</div>
                   </div>
                 );
               })}

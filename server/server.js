@@ -1,5 +1,5 @@
+import "./loadEnv.js";
 import express from "express";
-import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 import cors from "cors";
@@ -17,7 +17,6 @@ import passport from "./config/passport.js";
 
 // env
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 const isProd = process.env.NODE_ENV === "production";
 
@@ -67,6 +66,15 @@ if (isProd) {
 connectDB();
 
 
+// root route
+app.get("/", (req, res) => {
+  res.status(200).json({
+    message: "LinkMint API is running",
+    health: "/health",
+    frontend: process.env.CLIENT_URL || "http://localhost:5173"
+  });
+});
+
 // health check — placed BEFORE rate limiters so monitoring pings are never throttled
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -114,7 +122,7 @@ app.use(morgan(isProd ? "combined" : "dev"));
 // auth rate limiter
 const authLimiter = rateLimit({
   windowMs: 5 * 60 * 1000,
-  max: 15,
+  max: isProd ? 15 : 1000,
   message: { message: "Too many authentication requests. Please try again later." },
   standardHeaders: true,
   legacyHeaders: false,

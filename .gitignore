@@ -21,5 +21,9 @@ Thumbs.db
 *.log
 npm-debug.log*
 
+# Dev-only scripts (not for production)
+server/seed_urls.js
+server/init_db.js
+
 # Docs
 README.md
